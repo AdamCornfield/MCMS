@@ -1,0 +1,22 @@
+<div class="container">
+    <div class="table-responsive">
+        <table class="table table-striped">
+            <thead>
+                <th scope="col"></th>
+                <% columnNames.forEach(column => { %>
+                    <th scope="col"><%= column %></th>
+                <% }) %>
+            </thead>
+            <tbody>
+                <% users.forEach(user => { %>
+                    <tr>
+                        <td><a href="/admin/manageUsers/<%= user.userID %>" type="button" class="btn">Edit Profile</a></td>
+                        <% columnNames.forEach(key => { %>
+                            <td><%= user[key] %></td>
+                        <% }) %>
+                    </tr>
+                <% }) %>
+            </tbody>
+        </table>
+    </div>
+</div>

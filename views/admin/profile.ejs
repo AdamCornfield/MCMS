@@ -1,0 +1,25 @@
+<div class="container text-center">
+    <div class="row">
+        <div class="col-12 col-md-2 p-4">
+            <img src="/public/img/PFP.png" class="img-fluid rounded-circle" alt="Profile Picture">
+        </div>
+        <div class="col-12 col-md-4 p-4 text-start">
+            <h4>Username: <%= user.username %></h4>
+            <h5>First Name: <%= user.firstName %></h5>
+            <h5>Last Name: <%= user.familyName %></h5>
+        </div>
+        <div class="col-12 col-md-6 text-start">
+            <form action="/admin/perms" method="POST">
+                <% global.permData.forEach(perm => { %>
+                    <div class="form-check form-switch mb-3">
+                        <input class="form-check-input" type="checkbox"  role="switch" value="" id="perm_<%= perm.bitPos %>" name="perm_<%= perm.bitPos %>">
+                        <label class="form-check-label" for="perm_<%= perm.bitPos %>">
+                            <%= perm.permissionName %>
+                        </label>
+                        <div id="id=perm_<%= perm.bitPos %>_help" class="form-text"><%= perm.permissionDescription %></div>
+                    </div>
+                <% }) %>
+            </form>
+        </div>
+    </div>
+</div>

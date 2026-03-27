@@ -1,0 +1,38 @@
+{
+    "scripts": {
+        "start": "node server.js",
+        "dev": "nodemon server.js"
+    },
+    "name": "mcms",
+    "version": "1.0.0",
+    "main": "server.js",
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/AdamCornfield/MCMS.git"
+    },
+    "keywords": [],
+    "author": "",
+    "license": "ISC",
+    "bugs": {
+        "url": "https://github.com/AdamCornfield/MCMS/issues"
+    },
+    "homepage": "https://github.com/AdamCornfield/MCMS#readme",
+    "description": "",
+    "dependencies": {
+        "bootstrap": "^5.3.8",
+        "cookie-parser": "^1.4.7",
+        "dotenv": "^17.2.3",
+        "ejs": "^3.1.10",
+        "express": "^5.2.1",
+        "express-mysql-session": "^3.0.3",
+        "express-session": "^1.18.2",
+        "luxon": "^3.7.2",
+        "mysql": "^2.18.1",
+        "passport": "^0.7.0",
+        "passport-local": "^1.0.0",
+        "winston": "^3.19.0"
+    },
+    "devDependencies": {
+        "nodemon": "^3.1.11"
+    }
+}
