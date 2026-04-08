@@ -1,5 +1,12 @@
 <div class="container d-flex justify-content-center align-items-center">
     <div class="w-25 my-4">
+        <% if (valid) { %>
+            <div class="alert alert-danger show" role="alert">
+                <ul class="mb-0">
+                    <li><%= valid %></li>
+                </ul>
+            </div>
+        <% } %>
         <form action="/login" method="POST">
             <div class="mb-3">
                 <label for="username" class="form-label">Username</label>
