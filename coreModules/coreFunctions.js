@@ -121,8 +121,6 @@ function hashPassword(password) {
     return (`${salt}:${hash}`)
 }
 
-console.log(hashPassword("user"))
-
 /**
  * Verifies a password by hashing it with the same salt and comparing it to the stored hash
  * @param {String} password 

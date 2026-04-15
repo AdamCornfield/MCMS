@@ -32,6 +32,7 @@ const valid = require('./coreModules/validation')
 
 // const demoModule = require('mcms_demo_module')({auth, func, db, valid}) 
 const mcms_events_module = require('mcms_events_module')({auth, func, db, valid})
+const mcms_docs_module = require('mcms_docs_module')({auth, func, db, valid})
 
 
 const app = express()
@@ -102,6 +103,7 @@ app.use('/bootstrap', express.static(path.join(__dirname, 'node_modules', 'boots
 
 // app.use('/public/demo', express.static(mcms_demo_module.staticPath))
 app.use('/public/events', express.static(mcms_events_module.staticPath))
+app.use('/public/docs', express.static(mcms_docs_module.staticPath))
 
 
 // Routes
@@ -114,6 +116,7 @@ app.use('/login', require('./routes/login'))
 
 // app.use('/demo', mcms_demo_module.router)
 app.use('/events', mcms_events_module.router)
+app.use('/docs', mcms_docs_module.router)
 
 
 // 
