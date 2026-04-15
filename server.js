@@ -26,9 +26,12 @@ const func = require('./coreModules/coreFunctions')
 const db = require('./coreModules/dbConnection')
 const valid = require('./coreModules/validation')
 
-// Load external modules
+// Load external modules "InstallStep1"
 // This passes in the auth, func and db objects to the module so that it is able to perform database access and make use of preexisting core systems.
-const eventsModule = require('mcms_events_module')({auth, func, db, valid});
+// Copy the demo module layout below, modifying it for your needs.
+
+// const demoModule = require('mcms_demo_module')({auth, func, db, valid}) 
+const mcms_events_module = require('mcms_events_module')({auth, func, db, valid})
 
 
 const app = express()
@@ -87,7 +90,7 @@ app.set('views', [
     path.join(__dirname, 'views'),
 
     // Add the modules view path here to allow the renderer access to it
-    eventsModule.viewsPath 
+    mcms_events_module.viewsPath 
 ])
 
 // Defines static file folder locations
@@ -95,7 +98,10 @@ app.use('/public', express.static(path.join(__dirname, 'static', 'public')))
 app.use('/bootstrap', express.static(path.join(__dirname, 'node_modules', 'bootstrap', 'dist')))
 
 // Place the module static paths here, it should follow a similar format if the module is configured correctly
-app.use('/public/events', express.static(eventsModule.staticPath))
+// "InstallStep2"
+
+// app.use('/public/demo', express.static(mcms_demo_module.staticPath))
+app.use('/public/events', express.static(mcms_events_module.staticPath))
 
 
 // Routes
@@ -104,7 +110,10 @@ app.use('/admin', auth.isAuthorised, auth.hasPermissions(["MANAGE_USERS", "REVIE
 app.use('/login', require('./routes/login'))
 
 // Add the module router here, it's path should be unique to avoid any conflict issues
-app.use('/events', eventsModule.router)
+// "InstallStep3"
+
+// app.use('/demo', mcms_demo_module.router)
+app.use('/events', mcms_events_module.router)
 
 
 // 
