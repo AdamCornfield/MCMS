@@ -1,0 +1,7 @@
+{
+    "restartable": "rs",
+    "watch": [
+        "./",
+        "../MCMS_demo_module"
+    ]
+}

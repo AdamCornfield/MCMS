@@ -7,10 +7,17 @@ const func = require('../coreModules/coreFunctions')
 // Admin Dashboard
 
 router.get('/', (req, res) => {
-    res.render('default', {
-        isAuthenticated: req.isAuthenticated(),
-        pagePath: 'admin/index',
-        pageTitle: 'Admin Dashboard - MCMS'
+    func.getUserData(req.user, (success, userData) => {
+        if (!success) {
+            console.error('Error fetching user data:', userData)
+        } else {
+            res.render('default', {
+                isAuthenticated: req.isAuthenticated(),
+                userData,
+                pagePath: 'core/admin/index',
+                pageTitle: 'Admin Dashboard - MCMS'
+            })
+        }
     })
 })
 
@@ -28,13 +35,20 @@ router.route('/manageUsers')
             let perms = func.decodePermissionBitmask(filteredUsers[i].perms)
         }
 
-        // Render the users page with the filtered user data
-        res.render('default', {
-            isAuthenticated: req.isAuthenticated(),
-            pagePath: 'admin/users',
-            pageTitle: 'Users - MCMS',
-            columnNames: Object.keys(filteredUsers[0]), // Get column names to be used at the top of the table
-            users: filteredUsers
+        func.getUserData(req.user, (success, userData) => {
+            if (!success) {
+                console.error('Error fetching user data:', userData)
+            } else {
+                // Render the users page with the filtered user data
+                res.render('default', {
+                    isAuthenticated: req.isAuthenticated(),
+                    userData,
+                    pagePath: 'core/admin/users',
+                    pageTitle: 'Users - MCMS',
+                    columnNames: Object.keys(filteredUsers[0]), // Get column names to be used at the top of the table
+                    users: filteredUsers
+                })
+            }
         })
     })
 })
@@ -51,11 +65,19 @@ router.route('/manageUsers/:userID')
 
         const user = filteredUsers[0]
 
-        res.render('default', {
-            isAuthenticated: req.isAuthenticated(),
-            pagePath: 'admin/profile',
-            pageTitle: 'User Profile - MCMS',
-            user: user
+        
+        func.getUserData(req.user, (success, userData) => {
+            if (!success) {
+                console.error('Error fetching user data:', userData)
+            } else {
+                res.render('default', {
+                    isAuthenticated: req.isAuthenticated(),
+                    userData,
+                    pagePath: 'core/admin/profile',
+                    pageTitle: 'User Profile - MCMS',
+                    user: user
+                })
+            }
         })
     })
 })

@@ -85,28 +85,41 @@ app.use(express.json())
 
 app.set('views', [
     path.join(__dirname, 'views'),
-    eventsModule.viewsPath
+
+    // Add the modules view path here to allow the renderer access to it
+    eventsModule.viewsPath 
 ])
 
 // Defines static file folder locations
-app.use('/public',express.static(path.join(__dirname, 'static', 'public')))
-app.use('/bootstrap', express.static(path.join(__dirname, 'node_modules', 'bootstrap', 'dist')));
+app.use('/public', express.static(path.join(__dirname, 'static', 'public')))
+app.use('/bootstrap', express.static(path.join(__dirname, 'node_modules', 'bootstrap', 'dist')))
+
+// Place the module static paths here, it should follow a similar format if the module is configured correctly
+app.use('/public/events', express.static(eventsModule.staticPath))
 
 
 // Routes
-app.use('/events', eventsModule.router)
 app.use('/login', require('./routes/login'))
 app.use('/admin', auth.isAuthorised, auth.hasPermissions(["MANAGE_USERS", "REVIEW_APPLICATIONS", "VIEW_AUDIT_LOGS", "MANAGE_EVENTS"], "OR"), require('./routes/admin'))
 app.use('/login', require('./routes/login'))
 
+// Add the module router here, it's path should be unique to avoid any conflict issues
+app.use('/events', eventsModule.router)
 
 
 // 
 app.get('/', (req, res) => {
-    res.render('default', {
-        isAuthenticated: req.isAuthenticated(),
-        pagePath: 'core/home',
-        pageTitle: 'MCMS - Modular Community Management System'
+    func.getUserData(req.user, (success, userData) => {
+        if (!success) {
+            console.error('Error fetching user data:', userData)
+        } else {
+            res.render('default', {
+                isAuthenticated: req.isAuthenticated(),
+                pagePath: 'core/home',
+                userData,
+                pageTitle: 'MCMS - Modular Community Management System'
+            })
+        }
     })
 })
 
