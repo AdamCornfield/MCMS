@@ -90,8 +90,11 @@ app.use(express.json())
 app.set('views', [
     path.join(__dirname, 'views'),
 
-    // Add the modules view path here to allow the renderer access to it
-    mcms_events_module.viewsPath 
+    // Add the modules view path here to allow the renderer access to it "InstallStep2"
+
+    // mcms_demo_module.viewsPath,
+    mcms_events_module.viewsPath,
+    mcms_docs_module.viewsPath,
 ])
 
 // Defines static file folder locations
@@ -99,7 +102,7 @@ app.use('/public', express.static(path.join(__dirname, 'static', 'public')))
 app.use('/bootstrap', express.static(path.join(__dirname, 'node_modules', 'bootstrap', 'dist')))
 
 // Place the module static paths here, it should follow a similar format if the module is configured correctly
-// "InstallStep2"
+// "InstallStep3"
 
 // app.use('/public/demo', express.static(mcms_demo_module.staticPath))
 app.use('/public/events', express.static(mcms_events_module.staticPath))
@@ -112,7 +115,7 @@ app.use('/admin', auth.isAuthorised, auth.hasPermissions(["MANAGE_USERS", "REVIE
 app.use('/login', require('./routes/login'))
 
 // Add the module router here, it's path should be unique to avoid any conflict issues
-// "InstallStep3"
+// "InstallStep4"
 
 // app.use('/demo', mcms_demo_module.router)
 app.use('/events', mcms_events_module.router)

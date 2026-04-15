@@ -2,6 +2,7 @@
     "restartable": "rs",
     "watch": [
         "./",
-        "../MCMS_demo_module"
+        "../MCMS_events_module",
+        "../MCMS_docs_module"
     ]
 }
