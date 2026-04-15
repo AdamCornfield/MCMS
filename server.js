@@ -28,7 +28,7 @@ const valid = require('./coreModules/validation')
 
 // Load external modules
 // This passes in the auth, func and db objects to the module so that it is able to perform database access and make use of preexisting core systems.
-const eventsModule = require('mcms_demo_module')({auth, func, db, valid});
+const eventsModule = require('mcms_events_module')({auth, func, db, valid});
 
 
 const app = express()
