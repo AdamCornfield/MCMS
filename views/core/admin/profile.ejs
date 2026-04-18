@@ -1,25 +1,145 @@
-<div class="container text-center">
-    <div class="row">
-        <div class="col-12 col-md-2 p-4">
-            <img src="/public/img/PFP.png" class="img-fluid rounded-circle" alt="Profile Picture">
+<%
+    const getError = (errors, field) => errors.find(error => error.field === field)
+%>
+
+<div class="container py-4">
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4">
+        <div>
+            <h1 class="h3 mb-1">Edit User Profile</h1>
+            <p class="text-body-secondary mb-0">Update account details and permission access for <strong><%= user.username %></strong>.</p>
         </div>
-        <div class="col-12 col-md-4 p-4 text-start">
-            <h4>Username: <%= user.username %></h4>
-            <h5>First Name: <%= user.firstName %></h5>
-            <h5>Last Name: <%= user.familyName %></h5>
-        </div>
-        <div class="col-12 col-md-6 text-start">
-            <form action="/admin/perms" method="POST">
-                <% global.permData.forEach(perm => { %>
-                    <div class="form-check form-switch mb-3">
-                        <input class="form-check-input" type="checkbox"  role="switch" value="" id="perm_<%= perm.bitPos %>" name="perm_<%= perm.bitPos %>">
-                        <label class="form-check-label" for="perm_<%= perm.bitPos %>">
-                            <%= perm.permissionName %>
-                        </label>
-                        <div id="id=perm_<%= perm.bitPos %>_help" class="form-text"><%= perm.permissionDescription %></div>
+        <a href="/admin/manageUsers" class="btn btn-outline-secondary">Back to Users</a>
+    </div>
+
+    <div class="row g-4">
+        <div class="col-12 col-lg-4">
+            <div class="card shadow-sm h-100">
+                <div class="card-body text-center p-4">
+                    <img src="/public/img/PFP.png" class="img-fluid rounded-circle mb-3" alt="Profile Picture" style="max-width: 132px;">
+                    <h2 class="h4 mb-1"><%= user.firstName %> <%= user.lastName %></h2>
+                    <p class="text-body-secondary mb-3">@<%= user.username %></p>
+                    <div class="small text-start">
+                        <div class="mb-2"><strong>Email:</strong> <%= user.email %></div>
+                        <div class="mb-2"><strong>Date of Birth:</strong> <%= formData.DOB %></div>
+                        <div class="mb-2"><strong>Timezone:</strong> <%= user.timezone %></div>
+                        <div><strong>User ID:</strong> <span class="text-body-secondary"><%= user.userID %></span></div>
                     </div>
-                <% }) %>
-            </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-12 col-lg-8">
+            <div class="card shadow-sm mb-4">
+                <div class="card-body p-4">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <div>
+                            <h3 class="h5 mb-1">Profile Details</h3>
+                            <p class="text-body-secondary mb-0">Edit the user information stored on their account.</p>
+                        </div>
+                    </div>
+
+                    <% if (profileSuccess) { %>
+                        <div class="alert alert-success" role="alert"><%= profileSuccess %></div>
+                    <% } %>
+                    <% if (getError(profileErrors, 'form')) { %>
+                        <div class="alert alert-danger" role="alert"><%= getError(profileErrors, 'form').message %></div>
+                    <% } %>
+
+                    <form action="/admin/manageUsers/<%= user.userID %>" method="POST">
+                        <div class="row g-3">
+                            <div class="col-12 col-md-6">
+                                <label for="firstName" class="form-label">First Name</label>
+                                <input type="text" class="form-control <%= getError(profileErrors, 'firstName') ? 'is-invalid' : '' %>" id="firstName" name="firstName" value="<%= formData.firstName %>" required>
+                                <% if (getError(profileErrors, 'firstName')) { %>
+                                    <div class="invalid-feedback"><%= getError(profileErrors, 'firstName').message %></div>
+                                <% } %>
+                            </div>
+
+                            <div class="col-12 col-md-6">
+                                <label for="lastName" class="form-label">Last Name</label>
+                                <input type="text" class="form-control <%= getError(profileErrors, 'lastName') ? 'is-invalid' : '' %>" id="lastName" name="lastName" value="<%= formData.lastName %>" required>
+                                <% if (getError(profileErrors, 'lastName')) { %>
+                                    <div class="invalid-feedback"><%= getError(profileErrors, 'lastName').message %></div>
+                                <% } %>
+                            </div>
+
+                            <div class="col-12 col-md-6">
+                                <label for="username" class="form-label">Username</label>
+                                <input type="text" class="form-control <%= getError(profileErrors, 'username') ? 'is-invalid' : '' %>" id="username" name="username" value="<%= formData.username %>" required>
+                                <% if (getError(profileErrors, 'username')) { %>
+                                    <div class="invalid-feedback"><%= getError(profileErrors, 'username').message %></div>
+                                <% } %>
+                            </div>
+
+                            <div class="col-12 col-md-6">
+                                <label for="email" class="form-label">Email</label>
+                                <input type="email" class="form-control <%= getError(profileErrors, 'email') ? 'is-invalid' : '' %>" id="email" name="email" value="<%= formData.email %>" required>
+                                <% if (getError(profileErrors, 'email')) { %>
+                                    <div class="invalid-feedback"><%= getError(profileErrors, 'email').message %></div>
+                                <% } %>
+                            </div>
+
+                            <div class="col-12 col-md-6">
+                                <label for="DOB" class="form-label">Date of Birth</label>
+                                <input type="date" class="form-control <%= getError(profileErrors, 'DOB') ? 'is-invalid' : '' %>" id="DOB" name="DOB" value="<%= formData.DOB %>" required>
+                                <% if (getError(profileErrors, 'DOB')) { %>
+                                    <div class="invalid-feedback"><%= getError(profileErrors, 'DOB').message %></div>
+                                <% } %>
+                            </div>
+
+                            <div class="col-12 col-md-6">
+                                <label for="timezone" class="form-label">Timezone</label>
+                                <input type="text" class="form-control <%= getError(profileErrors, 'timezone') ? 'is-invalid' : '' %>" id="timezone" name="timezone" value="<%= formData.timezone %>" required>
+                                <% if (getError(profileErrors, 'timezone')) { %>
+                                    <div class="invalid-feedback"><%= getError(profileErrors, 'timezone').message %></div>
+                                <% } %>
+                            </div>
+                        </div>
+
+                        <div class="mt-4 d-flex justify-content-end">
+                            <button type="submit" class="btn btn-primary">Save Profile</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <div class="card shadow-sm">
+                <div class="card-body p-4">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <div>
+                            <h3 class="h5 mb-1">Permissions</h3>
+                            <p class="text-body-secondary mb-0">Grant or revoke access using the existing bitmask permission system.</p>
+                        </div>
+                    </div>
+
+                    <% if (permissionSuccess) { %>
+                        <div class="alert alert-success" role="alert"><%= permissionSuccess %></div>
+                    <% } %>
+                    <% if (getError(permissionErrors, 'form')) { %>
+                        <div class="alert alert-danger" role="alert"><%= getError(permissionErrors, 'form').message %></div>
+                    <% } %>
+
+                    <form action="/admin/manageUsers/<%= user.userID %>/permissions" method="POST">
+                        <div class="row row-cols-1 g-3">
+                            <% permissionToggles.forEach(perm => { %>
+                                <div class="col">
+                                    <div class="form-check form-switch border rounded p-3">
+                                        <input class="form-check-input" type="checkbox" role="switch" value="1" id="perm_<%= perm.bitPos %>" name="perm_<%= perm.bitPos %>" <%= perm.checked ? 'checked' : '' %>>
+                                        <label class="form-check-label fw-semibold ms-2" for="perm_<%= perm.bitPos %>">
+                                            <%= perm.permissionName %>
+                                        </label>
+                                        <div class="form-text mt-2"><%= perm.permissionDescription %></div>
+                                    </div>
+                                </div>
+                            <% }) %>
+                        </div>
+
+                        <div class="mt-4 d-flex justify-content-end">
+                            <button type="submit" class="btn btn-primary">Save Permissions</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
         </div>
     </div>
 </div>

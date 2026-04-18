@@ -4,22 +4,12 @@ const mysql = require('mysql')
 const dotenv = require('dotenv').config()
 const crypto = require('crypto')
 const luxon = require('luxon')
-const fs = require('fs')
 const bodyParser = require('body-parser')
 
 const passport = require('passport')
 const session = require('express-session')
 const cookieParser = require('cookie-parser')
 const MySQLStore = require('express-mysql-session')(session)
-
-// Load permission data into a global variable to be accessed across the application for encoding and decoding permissions,
-// It is mapped to an object to improve efficiency of lookups when encoding and decoding permissions by bit position
-global.permData = JSON.parse(fs.readFileSync('./permissions.json'))
-
-global.permDataMapped = Object.fromEntries(
-    global.permData.map(perm => [perm.bitPos, perm]).reverse()
-)
-
 
 const auth = require('./coreModules/auth')
 const func = require('./coreModules/coreFunctions')
@@ -45,6 +35,20 @@ app.set('trust proxy', 1)
 
 // Create database connection
 const con = require('./coreModules/dbConnection')
+
+function loadPermissionData(cb) {
+    con.query('SELECT bitPos, permissionName, permissionDescription FROM perms ORDER BY bitPos ASC', (err, results) => {
+        if (err) {
+            cb(err)
+        } else {
+            global.permData = results
+            global.permDataMapped = Object.fromEntries(
+                global.permData.map(perm => [perm.bitPos, perm]).reverse()
+            )
+            cb(null)
+        }
+    })
+}
 
 const localStrategy = require('./strategies/localStrategy')
 
@@ -101,8 +105,7 @@ app.set('views', [
 app.use('/public', express.static(path.join(__dirname, 'static', 'public')))
 app.use('/bootstrap', express.static(path.join(__dirname, 'node_modules', 'bootstrap', 'dist')))
 
-// Place the module static paths here, it should follow a similar format if the module is configured correctly
-// "InstallStep3"
+// Place the module static paths here, it should follow a similar format if the module is configured correctly "InstallStep3"
 
 // app.use('/public/demo', express.static(mcms_demo_module.staticPath))
 app.use('/public/events', express.static(mcms_events_module.staticPath))
@@ -111,7 +114,7 @@ app.use('/public/docs', express.static(mcms_docs_module.staticPath))
 
 // Routes
 app.use('/login', require('./routes/login'))
-app.use('/admin', auth.isAuthorised, auth.hasPermissions(["MANAGE_USERS", "REVIEW_APPLICATIONS", "VIEW_AUDIT_LOGS", "MANAGE_EVENTS"], "OR"), require('./routes/admin'))
+app.use('/admin', auth.isAuthorised, auth.hasPermissions(["MANAGE_USERS", "EDIT_PERMS", "REVIEW_APPLICATIONS", "VIEW_AUDIT_LOGS", "MANAGE_EVENTS"], "OR"), require('./routes/admin'))
 app.use('/login', require('./routes/login'))
 
 // Add the module router here, it's path should be unique to avoid any conflict issues
@@ -138,6 +141,13 @@ app.get('/', (req, res) => {
     })
 })
 
-app.listen(port, () => {
-    console.log(`Server is running on http://localhost:${port}`)
+loadPermissionData((err) => {
+    if (err) {
+        console.error('Failed to load permissions from database:', err)
+        process.exit(1)
+    }
+
+    app.listen(port, () => {
+        console.log(`Server is running on http://localhost:${port}`)
+    })
 })
