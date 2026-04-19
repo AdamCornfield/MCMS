@@ -25,16 +25,15 @@ function isAuthorised(req, res, next) {
  */
 function hasPermissions(requiredPerms, logicType = "AND") {
     return async (req, res, next) => {
-        con.query("SELECT * FROM users WHERE userID = ?", [req.user], (err, results) => {
-            if (err) {
-                console.log(err)
+        func.getUserData(req.user, (success, userData) => {
+            if (!success) {
+                console.error('Error fetching user data:', userData)
                 res.redirect('/login')
             } else {
-                const user = results[0]
-                if (func.hasPermissions(requiredPerms, user.perms, logicType)) {
+                if (func.hasPermissions(requiredPerms, userData.perms, logicType)) {
                     next()
                 } else {
-                    res.redirect('/forbidden')
+                    res.redirect('/')
                 }
             }
         })

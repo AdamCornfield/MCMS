@@ -68,13 +68,19 @@ function decodePermissionBitmask(bitmask) {
 
 /**
  * Back end logic to check if a user's provided permissions meet the requirements specified. Contains the logic for both "AND" and "OR" operations as well as universal access for admins.
+ * Will accept either an Integer bitmask or a decoded permissions object.
  * @param {Array} requiredPerms 
- * @param {Integer} userPerms 
+ * @param {Integer, Object} userPerms 
  * @param {String} logicType "AND" or "OR"
  * @returns {Boolean}
  */
 function hasPermissions(requiredPerms, userPerms, logicType = "AND") {
-    let decodedUserPerms = decodePermissionBitmask(userPerms)
+
+    if (typeof userPerms === 'object') {
+        decodedUserPerms = userPerms
+    } else {
+        let decodedUserPerms = decodePermissionBitmask(userPerms)
+    }
 
     if (decodedUserPerms["ADMINISTRATOR"] === true) {
         return true
@@ -104,6 +110,8 @@ function hasPermissions(requiredPerms, userPerms, logicType = "AND") {
         }
     }
 }
+
+console.log(hashPassword("events"))
 
 /**
  * Hashes a password using the scrypt algorithm with a random salt, returning the combined salt and hash for storage
@@ -175,6 +183,7 @@ function getUserData(userID, cb) {
                     userID: results[0].userID,
                     username: results[0].username,
                     perms: decodePermissionBitmask(results[0].perms),
+                    permsValue: results[0].perms,
                     email: results[0].email,
                     DOB: results[0].DOB,
                     firstName: results[0].firstName,
@@ -187,7 +196,21 @@ function getUserData(userID, cb) {
             }
         })
     } else {
-        cb(true, null)
+        cb
+        (
+            true, 
+            {
+                userID: '',
+                username: '',
+                perms: decodePermissionBitmask(0),
+                email: '',
+                DOB: '',
+                firstName: '',
+                lastName: '',
+                timezone: '',
+                accountCreated: DateTime.utc()
+            }
+        )
     }
 }
 

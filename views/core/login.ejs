@@ -1,22 +1,45 @@
-<div class="container d-flex justify-content-center align-items-center">
-    <div class="w-25 my-4">
-        <% if (valid) { %>
-            <div class="alert alert-danger show" role="alert">
-                <ul class="mb-0">
-                    <li><%= valid %></li>
-                </ul>
+<section class="py-5">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-12 col-sm-10 col-md-8 col-lg-5 col-xl-4">
+                <div class="card shadow-sm border-0">
+                    <div class="card-body p-4 p-md-5">
+                        <div class="text-center mb-4">
+                            <h1 class="h3 mb-2">Sign In</h1>
+                            <p class="text-body-secondary mb-0">Access your MCMS account.</p>
+                        </div>
+
+                        <% if (valid) { %>
+                            <div class="alert alert-danger" role="alert">
+                                <ul class="mb-0 ps-3">
+                                    <li><%= valid %></li>
+                                </ul>
+                            </div>
+                        <% } %>
+
+                        <form action="/login" method="POST" novalidate>
+                            <div class="mb-3">
+                                <label for="username" class="form-label">Username</label>
+                                <input type="text" class="form-control" id="username" name="username" autocomplete="username" required>
+                            </div>
+
+                            <div class="mb-4">
+                                <label for="password" class="form-label">Password</label>
+                                <input type="password" class="form-control" id="password" name="password" autocomplete="current-password" required>
+                            </div>
+
+                            <div class="d-grid gap-2">
+                                <button type="submit" class="btn btn-primary">Sign In</button>
+                            </div>
+                        </form>
+
+                        <p class="text-center text-body-secondary small mt-4 mb-0">
+                            Need an account?
+                            <a href="/login/register" class="link-light">Create one here</a>
+                        </p>
+                    </div>
+                </div>
             </div>
-        <% } %>
-        <form action="/login" method="POST">
-            <div class="mb-3">
-                <label for="username" class="form-label">Username</label>
-                <input type="text" class="form-control" id="username" name="username">
-            </div>
-            <div class="mb-3">
-                <label for="password" class="form-label">Password</label>
-                <input type="password" class="form-control" id="password" name="password">
-            </div>
-            <button type="submit" class="btn btn-primary">Submit</button>
-        </form>
+        </div>
     </div>
-</div>
+ </section>
