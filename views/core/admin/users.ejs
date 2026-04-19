@@ -29,6 +29,9 @@
                                 <td class="text-nowrap">
                                     <% if (canEditUsers) { %>
                                         <a href="/admin/manageUsers/<%= user.userID %>" type="button" class="btn btn-sm btn-outline-primary">Edit Profile</a>
+                                        <% if (canChangePasswords) { %>
+                                            <a href="/admin/manageUsers/<%= user.userID %>/changePassword" type="button" class="btn btn-sm btn-outline-warning">Change Password</a>
+                                        <% } %>
                                     <% } else { %>
                                         <span class="text-body-secondary small">No edit access</span>
                                     <% } %>

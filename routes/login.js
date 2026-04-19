@@ -67,7 +67,6 @@ router.route('/register')
         lastName = valid.sanitiseInput(lastName || '')
         username = valid.sanitiseInput(username || '')
         email = valid.sanitiseInput(email || '')
-        timezone = valid.sanitiseInput(timezone || '')
 
         // Perform validation checks on the data
         if (!firstName) errors.push({ field: 'firstName', message: 'First name is required' })

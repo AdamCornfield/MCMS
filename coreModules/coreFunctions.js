@@ -111,8 +111,6 @@ function hasPermissions(requiredPerms, userPerms, logicType = "AND") {
     }
 }
 
-console.log(hashPassword("events"))
-
 /**
  * Hashes a password using the scrypt algorithm with a random salt, returning the combined salt and hash for storage
  * @param {String} password 

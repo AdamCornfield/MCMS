@@ -23,7 +23,7 @@
             <div class="collapse navbar-collapse" id="navbarSupportedContent">
                 <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                     <li class="nav-item">
-                        <a class="nav-link active" aria-current="page" href="#">Home</a>
+                        <a class="nav-link active" aria-current="page" href="/">Home</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="/events">Events</a>
@@ -34,19 +34,24 @@
                 </ul>
             </div>
             <%
-            if (isAuthenticated) {
-            %>
-                <%- include('core/partials/namecard-auth') %>
-            <%
-            } else {
-            %>
+            if (isAuthenticated) { %>
+                <div class="dropdown text-end"> <a href="#" class="d-block link-body-emphasis text-decoration-none dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false"> <img src="/public/img/PFP.png" alt="mdo" width="32" height="32" class="rounded-circle"></a>
+                    <ul class="dropdown-menu">
+                        <li><span class="dropdown-item-text fw-bold">Welcome back <span class="text-success-emphasis "><%= userData.username %></span>!</span></li>
+                        <li><hr class="dropdown-divider"></li>
+                        <% if (userData?.permsValue !== 0) { %>
+                            <li><a class="dropdown-item" href="/admin">Admin Portal</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                        <% } %>
+                        <li><a class="dropdown-item" href="/login/logout">Sign out</a></li>
+                    </ul>
+                </div>
+            <% } else { %>
                 <div class="text-end">
                     <a href="/login" class="btn btn-outline-light me-2">Login</a>
                     <a href="/login/register" class="btn btn-warning">Sign Up</a>
                 </div>
-            <%
-            }
-            %>
+            <% } %>
         </div>
     </nav>
 
@@ -54,68 +59,6 @@
 
     <div class="container">
         <footer class="py-5">
-            <div class="row">
-              <div class="col-6 col-md-2 mb-3">
-                <h5>Section</h5>
-                <ul class="nav flex-column">
-                    <li class="nav-item mb-2">
-                        <a href="#" class="nav-link p-0 text-body-secondary">Home</a>
-                    </li>
-                    <li class="nav-item mb-2">
-                        <a href="#" class="nav-link p-0 text-body-secondary">Features</a>
-                    </li>
-                    <li class="nav-item mb-2">
-                        <a href="#" class="nav-link p-0 text-body-secondary">Pricing</a>
-                    </li>
-                    <li class="nav-item mb-2">
-                        <a href="#" class="nav-link p-0 text-body-secondary">FAQs</a>
-                    </li>
-                    <li class="nav-item mb-2">
-                        <a href="#" class="nav-link p-0 text-body-secondary">About</a>
-                    </li>
-                </ul>
-              </div>
-              <div class="col-6 col-md-2 mb-3">
-                <h5>Section</h5>
-                <ul class="nav flex-column">
-                    <li class="nav-item mb-2">
-                        <a href="#" class="nav-link p-0 text-body-secondary">Home</a>
-                    </li>
-                    <li class="nav-item mb-2">
-                        <a href="#" class="nav-link p-0 text-body-secondary">Features</a>
-                    </li>
-                    <li class="nav-item mb-2">
-                        <a href="#" class="nav-link p-0 text-body-secondary">Pricing</a>
-                    </li>
-                    <li class="nav-item mb-2">
-                        <a href="#" class="nav-link p-0 text-body-secondary">FAQs</a>
-                    </li>
-                    <li class="nav-item mb-2">
-                        <a href="#" class="nav-link p-0 text-body-secondary">About</a>
-                    </li>
-                </ul>
-              </div>
-              <div class="col-6 col-md-2 mb-3">
-                <h5>Section</h5>
-                <ul class="nav flex-column">
-                    <li class="nav-item mb-2">
-                        <a href="#" class="nav-link p-0 text-body-secondary">Home</a>
-                    </li>
-                    <li class="nav-item mb-2">
-                        <a href="#" class="nav-link p-0 text-body-secondary">Features</a>
-                    </li>
-                    <li class="nav-item mb-2">
-                        <a href="#" class="nav-link p-0 text-body-secondary">Pricing</a>
-                    </li>
-                    <li class="nav-item mb-2">
-                        <a href="#" class="nav-link p-0 text-body-secondary">FAQs</a>
-                    </li>
-                    <li class="nav-item mb-2">
-                        <a href="#" class="nav-link p-0 text-body-secondary">About</a>
-                    </li>
-                </ul>
-              </div>
-            </div>
             <div class="d-flex flex-column flex-sm-row justify-content-between py-4 my-4 border-top">
               <p>© 2025 MCMS. All rights reserved.</p>
             </div>
