@@ -4,7 +4,7 @@ const passport = require('passport')
 const router = express.Router()
 const bodyParser = require('body-parser')
 const luxon = require('luxon')
-const { v4: uuidv4 } = require('uuid');
+const { randomUUID } = require('crypto') 
 
 // Custom Modules
 const valid = require('../coreModules/validation')
@@ -135,7 +135,7 @@ router.route('/register')
                         })
                     } else {
                         const newUser = [
-                            uuidv4(),
+                            randomUUID(),
                             firstName,
                             lastName,
                             username,
