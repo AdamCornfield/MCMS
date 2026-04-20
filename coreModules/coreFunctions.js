@@ -177,23 +177,29 @@ function getUserData(userID, cb) {
             if (err) {
                 cb(false, err)
             } else {
-                let userData = {
-                    userID: results[0].userID,
-                    username: results[0].username,
-                    perms: decodePermissionBitmask(results[0].perms),
-                    permsValue: results[0].perms,
-                    email: results[0].email,
-                    DOB: results[0].DOB,
-                    firstName: results[0].firstName,
-                    lastName: results[0].lastName,
-                    timezone: results[0].timezone,
-                    accountCreated: DateTime.fromSeconds(results[0].accountCreated)
-                }
+                if (results.length === 0) {
+                    cb(false, 'No user found with that ID')
+                } else {
+                    
+                    let userData = {
+                        userID: results[0].userID,
+                        username: results[0].username,
+                        perms: decodePermissionBitmask(results[0].perms),
+                        permsValue: results[0].perms,
+                        email: results[0].email,
+                        DOB: results[0].DOB,
+                        firstName: results[0].firstName,
+                        lastName: results[0].lastName,
+                        timezone: results[0].timezone,
+                        accountCreated: DateTime.fromSeconds(results[0].accountCreated)
+                    }
 
-                cb(true, userData)
+                    cb(true, userData)
+                }
             }
         })
     } else {
+        // Just returns a blank user profile for when there is no one logged in
         cb
         (
             true, 
@@ -201,6 +207,7 @@ function getUserData(userID, cb) {
                 userID: '',
                 username: '',
                 perms: decodePermissionBitmask(0),
+                permsValue: 0,
                 email: '',
                 DOB: '',
                 firstName: '',

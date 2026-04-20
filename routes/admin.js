@@ -109,7 +109,6 @@ router.route('/manageUsers/:userID')
                     console.error('Error fetching profile user data:', profileUserData)
                     res.redirect('/admin/manageUsers')
                 } else {
-                    console.log(buildPermissionToggles(targetUserData.perms))
                     res.render('default', {
                         isAuthenticated: req.isAuthenticated(),
                         userData,
@@ -129,143 +128,97 @@ router.route('/manageUsers/:userID')
         }
     })
 })
-.post(auth.hasPermissions(["MANAGE_USERS"], "OR"), (req, res) => {
+.post(auth.hasPermissions(["MANAGE_USERS"], "AND"), (req, res) => {
     func.getUserData(req.user, (success, userData) => {
         if (!success) {
             console.error('Error fetching user data:', userData)
             res.redirect('/admin/manageUsers')
-            return
         } else {
             const userID = req.params.userID
 
-            con.query('SELECT * FROM users WHERE userID = ?', [userID], (err, results) => {
-                if (err) {
-                    console.error(err)
+            
+            func.getUserData(req.user, (success, targetUserData) => {
+                if (!success) {
+                    console.error('Error fetching user data:', targetUserData)
                     res.redirect('/admin/manageUsers')
                 } else {
-                    if (!results.length) {
-                        res.redirect('/admin/manageUsers')
+                    const formData = {
+                        firstName: valid.sanitiseInput(req.body.firstName),
+                        lastName: valid.sanitiseInput(req.body.lastName),
+                        username: valid.sanitiseInput(req.body.username),
+                        email: valid.sanitiseInput(req.body.email),
+                        DOB: req.body.DOB,
+                        timezone: req.body.timezone
+                    }
+
+                    
+                    const errors = []
+
+                    if (!formData.firstName) errors.push({ field: 'firstName', message: 'First name is required' })
+                    if (!formData.lastName) errors.push({ field: 'lastName', message: 'Last name is required' })
+                    if (!formData.username || !valid.isValidUsername(formData.username)) errors.push({ field: 'username', message: 'Username is required and must be between 3 and 20 characters, containing only letters, numbers or underscores' })
+                    if (!formData.email || !valid.isValidEmail(formData.email)) errors.push({ field: 'email', message: 'A valid email address is required' })
+                    if (!formData.timezone) errors.push({ field: 'timezone', message: 'Timezone is required' })
+
+                    if (!formData.DOB) {
+                        errors.push({ field: 'DOB', message: 'Date of birth is required' })
                     } else {
-                        const user = results[0]
+                        const dobDate = new Date(formData.DOB)
+                        const today = new Date()
 
-                        const formData = {
-                            firstName: valid.sanitiseInput(req.body.firstName),
-                            lastName: valid.sanitiseInput(req.body.lastName),
-                            username: valid.sanitiseInput(req.body.username),
-                            email: valid.sanitiseInput(req.body.email),
-                            DOB: req.body.DOB,
-                            timezone: req.body.timezone
+                        if (Number.isNaN(dobDate.getTime())) {
+                            errors.push({ field: 'DOB', message: 'Date of birth must be a valid date' })
+                        } else if (dobDate >= today) {
+                            errors.push({ field: 'DOB', message: 'Date of birth must be in the past' })
                         }
+                    }
 
-                        
-                        const errors = []
+                    if (errors.length > 0) {
+                        res.render('default', {
+                            isAuthenticated: req.isAuthenticated(),
+                            userData,
+                            pagePath: 'core/admin/profile',
+                            pageTitle: `Edit ${targetUserData.username} - MCMS`,
+                            user: targetUserData,
+                            formData: buildProfileFormData(user, formData),
+                            permissionToggles: buildPermissionToggles(user.perms),
+                            profileErrors: errors,
+                            permissionErrors: [],
+                            profileSuccess: null,
+                            permissionSuccess: null
+                        })
+                    } else {
+                        const updatedUser = [
+                            formData.username,
+                            formData.email,
+                            formData.DOB,
+                            formData.firstName,
+                            formData.lastName,
+                            formData.timezone,
+                            userID
+                        ]
 
-                        if (!formData.firstName) errors.push({ field: 'firstName', message: 'First name is required' })
-                        if (!formData.lastName) errors.push({ field: 'lastName', message: 'Last name is required' })
-                        if (!formData.username || !valid.isValidUsername(formData.username)) errors.push({ field: 'username', message: 'Username is required and must be between 3 and 20 characters, containing only letters, numbers or underscores' })
-                        if (!formData.email || !valid.isValidEmail(formData.email)) errors.push({ field: 'email', message: 'A valid email address is required' })
-                        if (!formData.timezone) errors.push({ field: 'timezone', message: 'Timezone is required' })
+                        con.query('UPDATE users SET username = ?, email = ?, DOB = ?, firstName = ?, lastName = ?, timezone = ? WHERE userID = ?', updatedUser, (err) => {
+                            if (err) {
+                                console.error(err)
 
-                        if (!formData.DOB) {
-                            errors.push({ field: 'DOB', message: 'Date of birth is required' })
-                        } else {
-                            const dobDate = new Date(formData.DOB)
-                            const today = new Date()
-
-                            if (Number.isNaN(dobDate.getTime())) {
-                                errors.push({ field: 'DOB', message: 'Date of birth must be a valid date' })
-                            } else if (dobDate >= today) {
-                                errors.push({ field: 'DOB', message: 'Date of birth must be in the past' })
-                            }
-                        }
-
-                        if (errors.length > 0) {
-                            res.render('default', {
-                                isAuthenticated: req.isAuthenticated(),
-                                userData,
-                                pagePath: 'core/admin/profile',
-                                pageTitle: `Edit ${user.username} - MCMS`,
-                                user: {
-                                    ...user,
-                                    permsDecoded: func.decodePermissionBitmask(user.perms || 0)
-                                },
-                                formData: buildProfileFormData(user, formData),
-                                permissionToggles: buildPermissionToggles(user.perms),
-                                profileErrors: errors,
-                                permissionErrors: [],
-                                profileSuccess: null,
-                                permissionSuccess: null
-                            })
-                        } else {
-                            if (existingUsers.length > 0) {
-                                func.getUserData(req.user, (success, userData) => {
-                                    if (!success) {
-                                        console.error('Error fetching user data:', userData)
-                                        res.redirect('/admin/manageUsers')
-                                        return
-                                    }
-
-                                    res.render('default', {
-                                        isAuthenticated: req.isAuthenticated(),
-                                        userData,
-                                        pagePath: 'core/admin/profile',
-                                        pageTitle: `Edit ${user.username} - MCMS`,
-                                        user: {
-                                            ...user,
-                                            permsDecoded: func.decodePermissionBitmask(user.perms || 0)
-                                        },
-                                        formData: buildProfileFormData(user, formData),
-                                        permissionToggles: buildPermissionToggles(user.perms),
-                                        profileErrors: [{ field: 'username', message: 'Username is already taken' }],
-                                        permissionErrors: [],
-                                        profileSuccess: null,
-                                        permissionSuccess: null
-                                    })
+                                res.render('default', {
+                                    isAuthenticated: req.isAuthenticated(),
+                                    userData,
+                                    pagePath: 'core/admin/profile',
+                                    pageTitle: `Edit ${user.username} - MCMS`,
+                                    user: targetUserData,
+                                    formData: buildProfileFormData(targetUserData, formData),
+                                    permissionToggles: buildPermissionToggles(targetUserData.perms),
+                                    profileErrors: [{ field: 'form', message: 'Unable to save profile details right now. Please try again.' }],
+                                    permissionErrors: [],
+                                    profileSuccess: null,
+                                    permissionSuccess: null
                                 })
                             } else {
-                                const updatedUser = [
-                                    formData.username,
-                                    formData.email,
-                                    formData.DOB,
-                                    formData.firstName,
-                                    formData.lastName,
-                                    formData.timezone,
-                                    userID
-                                ]
-
-                                con.query('UPDATE users SET username = ?, email = ?, DOB = ?, firstName = ?, lastName = ?, timezone = ? WHERE userID = ?', updatedUser, (err) => {
-                                    if (err) {
-                                        console.error(err)
-                                        func.getUserData(req.user, (success, userData) => {
-                                            if (!success) {
-                                                console.error('Error fetching user data:', userData)
-                                                res.redirect('/admin/manageUsers')
-                                                return
-                                            }
-
-                                            res.render('default', {
-                                                isAuthenticated: req.isAuthenticated(),
-                                                userData,
-                                                pagePath: 'core/admin/profile',
-                                                pageTitle: `Edit ${user.username} - MCMS`,
-                                                user: {
-                                                    ...user,
-                                                    permsDecoded: func.decodePermissionBitmask(user.perms || 0)
-                                                },
-                                                formData: buildProfileFormData(user, formData),
-                                                permissionToggles: buildPermissionToggles(user.perms),
-                                                profileErrors: [{ field: 'form', message: 'Unable to save profile details right now. Please try again.' }],
-                                                permissionErrors: [],
-                                                profileSuccess: null,
-                                                permissionSuccess: null
-                                            })
-                                        })
-                                    } else {
-                                        res.redirect(`/admin/manageUsers/${userID}?profileUpdated=1`)
-                                    }
-                                })
+                                res.redirect(`/admin/manageUsers/${userID}?profileUpdated=1`)
                             }
-                        }
+                        })
                     }
                 }
             })
@@ -349,57 +302,52 @@ router.post('/manageUsers/:userID/permissions', auth.hasPermissions(["EDIT_PERMS
         if (err) {
             console.error(err)
             res.redirect('/admin/manageUsers')
-            return
-        }
+        } else {
+            if (!results.length) {
+                res.redirect('/admin/manageUsers')
+            } else {
+            const user = results[0]
 
-        if (!results.length) {
-            res.redirect('/admin/manageUsers')
-            return
-        }
+            const selectedPermissions = global.permData
+                .filter(perm => req.body[`perm_${perm.bitPos}`] === '1')
+                .map(perm => perm.permissionName)
 
-        const user = results[0]
-
-        const selectedPermissions = global.permData
-            .filter(perm => req.body[`perm_${perm.bitPos}`] === '1')
-            .map(perm => perm.permissionName)
-
-        const permissionBitmask = func.encodePermissionBitmask(selectedPermissions)
-
-        con.query('UPDATE users SET perms = ? WHERE userID = ?', [permissionBitmask, userID], (err) => {
-            if (err) {
-                console.error(err)
-                func.getUserData(req.user, (success, userData) => {
-                    if (!success) {
-                        console.error('Error fetching user data:', userData)
-                        res.redirect('/admin/manageUsers')
-                        return
+            const permissionBitmask = func.encodePermissionBitmask(selectedPermissions)
+                con.query('UPDATE users SET perms = ? WHERE userID = ?', [permissionBitmask, userID], (err) => {
+                    if (err) {
+                        console.error(err)
+                        func.getUserData(req.user, (success, userData) => {
+                            if (!success) {
+                                console.error('Error fetching user data:', userData)
+                                res.redirect('/admin/manageUsers')
+                            } else {
+                                res.render('default', {
+                                    isAuthenticated: req.isAuthenticated(),
+                                    userData,
+                                    pagePath: 'core/admin/profile',
+                                    pageTitle: `Edit ${user.username} - MCMS`,
+                                    user: {
+                                        ...user,
+                                        permsDecoded: func.decodePermissionBitmask(user.perms || 0)
+                                    },
+                                    formData: buildProfileFormData(user),
+                                    permissionToggles: global.permData.map(perm => ({
+                                        ...perm,
+                                        checked: selectedPermissions.includes(perm.permissionName)
+                                    })),
+                                    profileErrors: [],
+                                    permissionErrors: [{ field: 'form', message: 'Unable to save permissions right now. Please try again.' }],
+                                    profileSuccess: null,
+                                    permissionSuccess: null
+                                })
+                            }
+                        })
+                    } else {
+                        res.redirect(`/admin/manageUsers/${userID}?permissionsUpdated=1`)
                     }
-
-                    res.render('default', {
-                        isAuthenticated: req.isAuthenticated(),
-                        userData,
-                        pagePath: 'core/admin/profile',
-                        pageTitle: `Edit ${user.username} - MCMS`,
-                        user: {
-                            ...user,
-                            permsDecoded: func.decodePermissionBitmask(user.perms || 0)
-                        },
-                        formData: buildProfileFormData(user),
-                        permissionToggles: global.permData.map(perm => ({
-                            ...perm,
-                            checked: selectedPermissions.includes(perm.permissionName)
-                        })),
-                        profileErrors: [],
-                        permissionErrors: [{ field: 'form', message: 'Unable to save permissions right now. Please try again.' }],
-                        profileSuccess: null,
-                        permissionSuccess: null
-                    })
                 })
-                return
             }
-
-            res.redirect(`/admin/manageUsers/${userID}?permissionsUpdated=1`)
-        })
+        }
     })
 })
 

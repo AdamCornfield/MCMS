@@ -4,7 +4,7 @@
         "dev": "nodemon server.js"
     },
     "name": "mcms",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "main": "server.js",
     "repository": {
         "type": "git",
@@ -29,7 +29,7 @@
         "express-session": "^1.18.2",
         "luxon": "^3.7.2",
         "mcms_docs_module": "^1.0.0",
-        "mcms_events_module": "^1.0.0",
+        "mcms_events_module": "^1.0.1",
         "mysql": "^2.18.1",
         "passport": "^0.7.0",
         "passport-local": "^1.0.0",
