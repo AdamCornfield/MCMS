@@ -33,8 +33,7 @@
                     </li>
                 </ul>
             </div>
-            <%
-            if (isAuthenticated) { %>
+            <% if (isAuthenticated) { %>
                 <div class="dropdown text-end"> <a href="#" class="d-block link-body-emphasis text-decoration-none dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false"> <img src="/public/img/PFP.png" alt="mdo" width="32" height="32" class="rounded-circle"></a>
                     <ul class="dropdown-menu">
                         <li><span class="dropdown-item-text fw-bold">Welcome back <span class="text-success-emphasis "><%= userData.username %></span>!</span></li>
