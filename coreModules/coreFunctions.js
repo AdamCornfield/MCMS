@@ -70,7 +70,7 @@ function decodePermissionBitmask(bitmask) {
  * Back end logic to check if a user's provided permissions meet the requirements specified. Contains the logic for both "AND" and "OR" operations as well as universal access for admins.
  * Will accept either an Integer bitmask or a decoded permissions object.
  * @param {Array} requiredPerms 
- * @param {Integer, Object} userPerms 
+ * @param {Object} userPerms Can also be an integer value
  * @param {String} logicType "AND" or "OR"
  * @returns {Boolean}
  */

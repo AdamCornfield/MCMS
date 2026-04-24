@@ -11,7 +11,7 @@ const valid = require('../coreModules/validation')
 /**
  * Takes an object of user permissions, and will build an array based on what permissions they have already or not for the toggles on the profile page
  * @param {Object} userPerms 
- * @returns 
+ * @returns {Array}
  */
 function buildPermissionToggles(userPerms) {
     return global.permData.map(perm => ({
@@ -23,9 +23,9 @@ function buildPermissionToggles(userPerms) {
 /**
  * Takes in a user object and another optional object, should that optional object exist and have relevant values then it will choose those values over the ones initially provided.
  * By doing this, even if there is an error or change in the data submitted from the HTML form and there are values missing, it will still be able to populate the form.
- * @param {*} user 
- * @param {*} overrides 
- * @returns 
+ * @param {Object} user 
+ * @param {Object} overrides 
+ * @returns {Object}
  */
 function buildProfileFormData(user, overrides = {}) {
     return {

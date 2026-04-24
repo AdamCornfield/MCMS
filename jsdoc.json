@@ -1,0 +1,19 @@
+{
+  "source": {
+    "include": [
+      "./server.js",
+      "./coreModules",
+      "./routes",
+      "./strategies",
+      "./node_modules/mcms_docs_module",
+      "./node_modules/mcms_events_module"
+    ],
+    "exclude": [
+      "./views",
+      "./static",
+      "./out"
+    ],
+    "includePattern": ".+\\.js(doc|x)?$",
+    "excludePattern": "(^|\\/|\\\\)_"
+  }
+}
