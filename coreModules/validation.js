@@ -1,4 +1,6 @@
-const { DateTime } = require('luxon')
+const luxon = require('luxon')
+
+const DateTime = luxon.DateTime
 
 /**
  * Remove any potentially harmful characters from the input
@@ -61,5 +63,7 @@ module.exports = {
     sanitiseInput,
     isValidEmail,
     isValidUsername,
-    isValidPassword
+    isValidPassword,
+    isValidDateTime,
+    isFutureDateTime
 }
