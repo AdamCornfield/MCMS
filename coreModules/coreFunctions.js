@@ -162,7 +162,7 @@ function filterColumns(array, exceptionList) {
 
     return filteredColumns
 }
-console.log(hashPassword("TestPassword123"))
+
 /**
  * Takes a userID and returns the user data from the database corresponding to that userID.
  * Returns first value as a boolean, false indicating failure, true indicating success.
